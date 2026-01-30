@@ -1,0 +1,216 @@
+{% extends "base.html" %}
+{% block title %}Lista zadań{% endblock %}
+
+{% block extra_css %}
+<style>
+    :root {
+        --bg-dark: #0a0a0a;
+        --bg-card: #111111;
+        --bg-input: #151515;
+        --border: #222222;
+        --text: #e0e0e0;
+        --text-muted: #888888;
+        --gray-btn: #555555;
+        --danger-dim: #3a1c1c;
+        --danger-text: #ff6b6b;
+        --success-text: #6bff9d;
+    }
+
+    body { background: var(--bg-dark); color: var(--text); font-family: system-ui, -apple-system, sans-serif; }
+    .hero h1 { font-weight: 700; }
+    
+    .card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+    
+    .form-select, .form-control {
+        background: var(--bg-input) !important;
+        border: 1px solid var(--border) !important;
+        color: white !important;
+        border-radius: 10px;
+    }
+
+    .table { color: var(--text); margin-bottom: 0; vertical-align: middle; border-collapse: separate; border-spacing: 0; }
+    .table thead th { 
+        background: transparent; 
+        border-bottom: 1px solid var(--border); 
+        color: var(--text-muted); 
+        text-transform: uppercase; 
+        font-size: 0.75rem; 
+        letter-spacing: 1px; 
+        padding: 1.2rem 1rem;
+    }
+    .table td { border-bottom: 1px solid var(--border); padding: 1rem; background: transparent !important; }
+
+    /* Zmiana: wymuszenie białego koloru dla tytułu zadania */
+    .task-title {
+        color: #ffffff !important;
+    }
+
+    .badge-gray { background: #1a1a1a; color: #aaa; border: 1px solid var(--border); padding: 0.5em 0.8em; border-radius: 6px; font-size: 0.85rem; }
+    .badge-urgent { background: #eee; color: #000; font-weight: 700; padding: 0.2em 0.5em; border-radius: 4px; font-size: 0.7rem; }
+    
+    .action-btn {
+        width: 38px;
+        height: 38px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 8px;
+        transition: all 0.2s;
+        background: var(--bg-input);
+        border: 1px solid var(--border);
+        color: var(--text-muted);
+        text-decoration: none;
+        cursor: pointer;
+        padding: 0;
+    }
+
+    .action-btn:hover {
+        background: var(--gray-btn);
+        color: white;
+        transform: translateY(-2px);
+    }
+
+    .delete-btn:hover {
+        background: var(--danger-dim);
+        border-color: var(--danger-text);
+        color: var(--danger-text);
+    }
+
+    .status-btn i { font-size: 1.1rem; }
+    .status-btn.completed {
+        color: var(--success-text) !important;
+        border-color: rgba(107, 255, 157, 0.2) !important;
+    }
+    .status-btn.completed:hover { background: rgba(107, 255, 157, 0.1); }
+    
+    .btn-plus { background: white; color: black; border-radius: 50px; font-weight: 600; padding: 10px 25px; border: none; text-decoration: none; }
+    .btn-plus:hover { background: #ccc; color: black; }
+
+    .btn-search-reset { background: var(--bg-input); border: 1px solid var(--border); color: var(--text-muted); border-radius: 8px; transition: 0.2s; }
+    .btn-search-reset:hover { background: var(--gray-btn); color: white; }
+
+    .task-completed-row { opacity: 0.5; }
+    .task-completed-row .task-title { text-decoration: line-through; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="hero mb-5">
+        <div class="row align-items-center">
+            <div class="col-lg-8">
+                <h1 class="display-5 mb-2"><i class="fas fa-list-check me-2"></i>Lista zadań</h1>
+                <p class="text-muted">Zarządzaj swoimi obowiązkami w minimalistycznym stylu.</p>
+            </div>
+            <div class="col-lg-4 text-lg-end">
+                <a href="{{ url_for('task.add_task') }}" class="btn btn-plus">
+                    <i class="fas fa-plus me-1"></i> Nowe zadanie
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-body p-4">
+            <form method="GET" action="{{ url_for('task.task_list') }}" class="row g-3">
+                <div class="col-md-3">
+                    <select name="sort" class="form-select" onchange="this.form.submit()">
+                        <option value="recent" {% if request.args.get('sort') == 'recent' %}selected{% endif %}>Najnowsze</option>
+                        <option value="date" {% if request.args.get('sort') == 'date' %}selected{% endif %}>Po dacie</option>
+                        <option value="urgent" {% if request.args.get('sort') == 'urgent' %}selected{% endif %}>Pilne</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <select name="category" class="form-select" onchange="this.form.submit()">
+                        <option value="">Wszystkie kategorie</option>
+                        {% for cat in categories %}
+                            <option value="{{ cat.id }}" {% if request.args.get('category') == cat.id|string %}selected{% endif %}>
+                                {{ cat.name }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <div class="input-group">
+                        <input type="text" name="search" class="form-control" placeholder="Szukaj zadania..." value="{{ request.args.get('search', '') }}">
+                        <button class="btn btn-search-reset" type="submit"><i class="fas fa-search"></i></button>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <a href="{{ url_for('task.task_list') }}" class="btn btn-search-reset w-100 text-center py-2 d-block text-decoration-none">Reset</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="table-responsive">
+            <table class="table align-middle">
+                <thead>
+                    <tr>
+                        <th class="text-center" style="width: 80px">Status</th>
+                        <th>Tytuł zadania</th>
+                        <th class="text-center">Kategoria</th>
+                        <th class="text-center">Termin</th>
+                        <th class="text-center" style="width: 80px">Akcje</th>
+                        <th class="text-center" style="width: 80px">Usuń</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for task in tasks %}
+                        {# Zmiana: Jeśli wybrany jest filtr 'urgent', pokazujemy tylko pilne zadania #}
+                        {% if request.args.get('sort') != 'urgent' or task.is_urgent %}
+                        <tr class="{% if task.is_completed %}task-completed-row{% endif %}">
+                            <td class="text-center">
+                                <form method="POST" action="{{ url_for('task.toggle_task', task_id=task.id, **request.args) }}">
+                                    <button type="submit" class="action-btn status-btn {% if task.is_completed %}completed{% endif %}" title="Zmień status">
+                                        {% if task.is_completed %}
+                                            <i class="fas fa-check-circle"></i>
+                                        {% else %}
+                                            <i class="far fa-circle"></i>
+                                        {% endif %}
+                                    </button>
+                                </form>
+                            </td>
+
+                            <td>
+                                <div class="d-flex align-items-center gap-2">
+                                    <span class="fw-500 task-title">{{ task.title }}</span>
+                                    {% if task.is_urgent %}<span class="badge badge-urgent">PILNE</span>{% endif %}
+                                </div>
+                            </td>
+
+                            <td class="text-center">
+                                <span class="badge-gray">{{ task.category.name if task.category else '-' }}</span>
+                            </td>
+
+                            <td class="text-center text-muted">
+                                {{ task.due_date.strftime('%d.%m.%Y') if task.due_date else '-' }}
+                            </td>
+
+                            <td class="text-center">
+                                <a href="{{ url_for('task.edit_task', task_id=task.id) }}" class="action-btn" title="Edytuj">
+                                    <i class="fas fa-pen-nib"></i>
+                                </a>
+                            </td>
+
+                            <td class="text-center">
+                                <form method="POST" action="{{ url_for('task.delete_task', task_id=task.id) }}" class="d-inline">
+                                    <button type="submit" class="action-btn delete-btn" onclick="return confirm('Czy na pewno chcesz usunąć to zadanie?')">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% endif %}
+                    {% else %}
+                    <tr>
+                        <td colspan="6" class="text-center py-5 text-muted">Brak zadań. Dodaj coś do zrobienia!</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

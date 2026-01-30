@@ -1,0 +1,128 @@
+{% extends "base.html" %}
+
+{% block title %}Edytuj kategorię{% endblock %}
+
+{% block extra_css %}
+<style>
+    :root {
+        --bg-dark: #0a0a0a;
+        --bg-card: #111111;
+        --bg-input: #151515;
+        --border: #222222;
+        --text: #e0e0e0;
+        --text-muted: #b0b0b0;
+        --gray: #9c9c9c;
+        --gray-hover: #c7c7c7;
+    }
+
+    body {
+        background: var(--bg-dark);
+        color: var(--text);
+        font-family: system-ui, -apple-system, sans-serif;
+    }
+
+    .category-container {
+        max-width: 600px; /* Narrower for single form alignment */
+        margin: 60px auto 40px;
+        padding: 0 20px;
+    }
+
+    .card {
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+        color: var(--text);
+    }
+
+    .form-title {
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin-bottom: 1.8rem;
+    }
+
+    .form-label {
+        color: #bbbbbb;
+        font-size: 0.9rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .form-control {
+        background: var(--bg-input) !important;
+        border: 1px solid var(--border) !important;
+        color: #ffffff !important;
+        border-radius: 10px;
+        padding: 0.7rem 1rem;
+    }
+
+    .form-control:focus {
+        border-color: #444444 !important;
+        box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.05) !important;
+        outline: none;
+    }
+
+    .btn-submit, .btn-back {
+        background: var(--bg-input);
+        border: 1px solid rgb(128, 128, 128);
+        color: var(--text-muted);
+        padding: 0.7rem 1.5rem;
+        border-radius: 50px;
+        text-decoration: none;
+        transition: 0.2s;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .btn-submit:hover, .btn-back:hover {
+        background: var(--gray);
+        color: white;
+        transform: translateY(-2px);
+    }
+    
+    .text-muted-small {
+        color: var(--text-muted);
+        font-size: 0.8rem;
+        margin-top: 5px;
+        display: block;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="category-container">
+    <div class="card">
+        <div class="card-body p-5">
+            <h2 class="form-title">
+                <i class="fas fa-edit me-2"></i>Edytuj kategorię
+            </h2>
+
+            <form method="POST" novalidate>
+                {{ form.hidden_tag() }}
+
+                <div class="mb-4">
+                    {{ form.name.label(class="form-label") }}
+                    {% if form.name.errors %}
+                        {{ form.name(class="form-control is-invalid", placeholder="Nazwa...") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.name.errors %}{{ error }}{% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.name(class="form-control") }}
+                    {% endif %}
+                    <small class="text-muted-small">
+                        Maksymalnie 100 znaków
+                    </small>
+                </div>
+
+                <div class="d-grid gap-3">
+                    {{ form.submit(class="btn btn-submit", value="Zapisz zmiany") }}
+                    <a href="{{ url_for('task.add_category') }}" class="btn btn-back">
+                        Anuluj
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,171 @@
+<!-- base.html - Szablon bazowy dla wszystkich stron aplikacji -->
+<!-- Zawiera navbar, footer, i inne wspólne elementy -->
+
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}TaskFlow{% endblock %} - Aplikacja Zarządzania Zadaniami</title>
+    <link rel="icon" type="image/x-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect fill='%231e5a96' width='100' height='100'/><text x='50' y='70' font-size='60' font-weight='bold' fill='white' text-anchor='middle' font-family='Arial'>✓</text></svg>">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.0/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+    {% block extra_css %}{% endblock %}
+</head>
+<body class="d-flex flex-column min-vh-100">
+<!-- Top Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-lg sticky-top navbar-primary">
+    <div class="container-fluid">
+        <a class="navbar-brand fw-bold" href="{{ url_for('main.index') }}">
+            <i class="fas fa-rocket me-2"></i>TaskFlow
+        </a>
+        <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                {% if current_user.is_authenticated %}
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="cursor: pointer;">
+                        <i class="fas fa-user-circle"></i> {{ current_user.username }}
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="userDropdown">
+                        <li><a class="dropdown-item" href="{{ url_for('task.settings') }}"><i class="fas fa-cog"></i> Ustawienia</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item text-danger" href="{{ url_for('auth.logout') }}"><i class="fas fa-sign-out-alt"></i> Wyloguj się</a></li>
+                    </ul>
+                </li>
+                {% else %}
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('auth.login') }}">
+                        <i class="fas fa-sign-in-alt"></i> Logowanie
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('auth.register') }}">
+                        <i class="fas fa-user-plus"></i> Rejestracja
+                    </a>
+                </li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<!-- Sidebar + Main Content Wrapper -->
+<div class="d-flex flex-grow-1 border-top border-secondary-subtle">
+    {% if current_user.is_authenticated %}
+        <nav class="sidebar py-3 bg-dark d-md-flex flex-column">
+            <ul class="nav flex-column">
+            <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('task.dashboard') }}">
+                        <i class="fas fa-th-large"></i> <span>Główna</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('task.add_task') }}">
+                        <i class="fas fa-plus"></i> <span>Nowe zadanie</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('task.add_category') }}">
+                        <i class="fas fa-folder"></i> <span>Kategorie</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('task.task_list') }}">
+                        <i class="fas fa-list"></i> <span>Lista</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('task.calendar') }}">
+                        <i class="fas fa-calendar"></i> <span>Kalendarz</span>
+                </a>
+            </li>
+            </li>
+            <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('task.settings') }}">
+                        <i class="fas fa-cog"></i> <span>Ustawienia</span>
+                </a>
+            </li>
+                <li class="nav-item mt-3 border-top border-secondary pt-3">
+                    <a class="nav-link" href="{{ url_for('auth.logout') }}">
+                        <i class="fas fa-power-off"></i> <span>Wyloguj</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+    {% endif %}
+
+    <!-- Main Content -->
+        <main class="flex-grow-1">
+
+    <!-- Komunikaty flash -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+            <div class="container-fluid mt-3 px-3">
+                {% for category, message in messages %}
+                <div class="alert alert-{{ 'success' if category == 'success' else 'danger' if category == 'danger' else 'info' }} alert-dismissible fade show shadow-sm" role="alert">
+                    <i class="fas fa-{% if category == 'success' %}check-circle{% elif category == 'danger' %}exclamation-circle{% else %}info-circle{% endif %} me-2"></i>
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+        {% endwith %}
+
+    <!-- Główna zawartość -->
+        <div class="container-fluid p-3 p-md-4">
+            {% block content %}{% endblock %}
+        </div>
+    </main>
+</div>
+
+<!-- Footer -->
+<footer class="footer py-3 bg-dark text-light">
+  <div class="container-fluid px-4">
+    <div class="row align-items-center gy-4">
+      
+      <!-- Left side - Brand & links -->
+      <div class="col-md-7 text-center text-md-start">
+        <h5 class="fw-bold mb-1 fs-4">
+          <i class="fas fa-rocket text-primary me-2"></i>TaskFlow
+        </h5>
+        <div class="d-flex flex-column gap-1 small">
+          <span class="text-secondary">Autor: Nikola Pastewka</span>
+          <div class="d-flex flex-wrap gap-3 gap-md-4 mt-1">
+            <a href="https://github.com/Nikola-Pastewka" 
+               target="_blank" rel="noopener" 
+               class="text-primary text-decoration-none hover-lift">
+              <i class="fab fa-github me-1"></i> GitHub Autora
+            </a>
+            <a href="https://github.com/Nikola-Pastewka/SWPS_Zaliczenie_1Semestr" 
+               target="_blank" rel="noopener" 
+               class="text-primary text-decoration-none hover-lift">
+              <i class="fab fa-github me-1"></i> GitHub Projektu
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right side - Copyright -->
+      <div class="col-md-5 text-center text-md-end">
+        <p class="small mb-0 text-muted">
+          © 2026 TaskFlow. All rights reserved.
+        </p>
+      </div>
+
+    </div>
+  </div>
+</footer>
+
+<!-- Scripts -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+<script src="{{ url_for('static', filename='js/script.js') }}"></script>
+{% block extra_js %}{% endblock %}
+
+</body>
+</html>

@@ -1,0 +1,219 @@
+<!-- login.html -->
+{% extends "base.html" %}
+{% block title %}Logowanie{% endblock %}
+
+{% block extra_css %}
+<style>
+    :root {
+        --bg-dark:       #0a0a0a;
+        --bg-card:       #111111;
+        --bg-input:      #151515;
+        --border:        #222222;
+        --text:          #e0e0e0;
+        --text-muted:    #777777;
+        --gray:          #555555;
+        --gray-hover:    #777777;
+        --gray-active:   #888888;
+    }
+
+    body {
+        background: var(--bg-dark);
+        color: var(--text);
+        font-family: system-ui, -apple-system, sans-serif;
+    }
+
+    .login-container {
+        max-width: 420px;
+        margin: 60px auto 40px;
+    }
+
+    .card {
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+    }
+
+    .card-body {
+        padding: 2.8rem 2.4rem;
+    }
+
+    .form-title {
+        text-align: center;
+        margin-bottom: 2.2rem;
+        font-size: 1.85rem;
+        font-weight: 600;
+        color: var(--text);
+    }
+
+    .form-title i {
+        color: var(--blue);
+        margin-right: 0.45rem;
+        font-size: 1.9rem;
+        vertical-align: -0.12em;
+    }
+
+    .form-label {
+        color: #bbbbbb;
+        font-size: 0.95rem;
+        font-weight: 500;
+        margin-bottom: 0.45rem;
+    }
+
+    .form-control {
+        background: var(--bg-input);
+        border: 1px solid var(--border);
+        color: #ffffff !important;
+        border-radius: 10px;
+        padding: 0.75rem 1.1rem;
+        height: 52px;
+        font-size: 1.05rem;
+        transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .form-control:focus {
+        border-color: #444444;
+        box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.25);
+        background: #181818;
+        outline: none;
+    }
+
+    .form-control::placeholder {
+        color: #666666 !important;
+        opacity: 1;
+    }
+
+    .form-check-input {
+        background-color: #1e1e1e;
+        border: 1px solid #333;
+    }
+
+    .form-check-input:checked {
+        background-color: var(--blue);
+        border-color: var(--blue);
+    }
+
+    .form-check-label {
+        color: #cccccc;
+        font-size: 0.95rem;
+    }
+    .btn-login {
+        background: var(--gray);
+        border: none;
+        color: white;
+        font-size: 1.1rem;
+        font-weight: 500;
+        padding: 0.9rem 1.5rem;
+        border-radius: 50px;
+        height: 54px;
+        width: 100%;
+        transition: all 0.22s ease;
+        box-shadow: 0 4px 14px rgba(0,0,0,0.4);
+    }
+
+    .btn-login:hover {
+        background: var(--gray-hover);
+        transform: translateY(-1px);
+        box-shadow: 0 6px 18px rgba(0,0,0,0.5);
+    }
+
+    .btn-login:active {
+        background: var(--gray-active);
+        transform: translateY(0);
+    }
+    
+    hr {
+        border-color: #222;
+        margin: 1.8rem 0;
+        opacity: 0.6;
+    }
+
+    .register-link {
+        text-align: center;
+        color: #888;
+        font-size: 0.95rem;
+    }
+
+    .register-link a {
+        color: #bbbbbb;
+        text-decoration: none;
+        font-weight: 500;
+    }
+
+    .register-link a:hover {
+        color: #ddd;
+        text-decoration: underline;
+    }
+
+    @media (max-width: 576px) {
+        .card-body {
+            padding: 2rem 1.6rem;
+        }
+        .login-container {
+            margin: 40px 15px 30px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="login-container">
+    <div class="card">
+        <div class="card-body">
+
+            <h2 class="form-title">
+                <i class="fas fa-arrow-right"></i> Zaloguj się
+            </h2>
+
+            <form method="POST" novalidate>
+                {{ form.hidden_tag() }}
+
+                <!-- Nazwa użytkownika -->
+                <div class="mb-4">
+                    {{ form.username.label(class="form-label") }}
+                    {% if form.username.errors %}
+                        {{ form.username(class="form-control is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.username.errors %}{{ error }}<br>{% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.username(class="form-control") }}
+                    {% endif %}
+                </div>
+
+                <!-- Hasło -->
+                <div class="mb-4">
+                    {{ form.password.label(class="form-label") }}
+                    {% if form.password.errors %}
+                        {{ form.password(class="form-control is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.password.errors %}{{ error }}<br>{% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.password(class="form-control") }}
+                    {% endif %}
+                </div>
+
+                <!-- Zapamiętaj mnie -->
+                <div class="mb-4 form-check">
+                    {{ form.remember(class="form-check-input") }}
+                    {{ form.remember.label(class="form-check-label") }}
+                </div>
+
+                <!-- Przycisk -->
+                <div class="d-grid mt-5">
+                    {{ form.submit(class="btn btn-login") }}
+                </div>
+            </form>
+
+            <hr>
+
+            <p class="register-link">
+                Nie masz konta? <a href="{{ url_for('auth.register') }}">Zarejestruj się tutaj</a>
+            </p>
+
+        </div>
+    </div>
+</div>
+{% endblock %}

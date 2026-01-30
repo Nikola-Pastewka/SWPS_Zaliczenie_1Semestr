@@ -1,0 +1,144 @@
+{% extends "base.html" %}
+{% block title %}Główna{% endblock %}
+{% block content %}
+
+<div class="hero mb-5 py-4">
+    <div class="row align-items-center">
+        <div class="col-lg-8">
+            <h1 class="display-5 fw-bold mb-2 text-white">
+                <i class="fas fa-rocket"></i> Witaj, {{ current_user.username }}!
+            </h1>
+            <p class="lead text-secondary">
+                Zarządzaj zadaniami i śledź postępy swoich projektów w jednym miejscu.
+            </p>
+        </div>
+        <div class="col-lg-4 text-lg-end">
+            <a href="{{ url_for('task.add_task') }}" class="btn btn-outline-light btn-lg">
+                <i class="fas fa-plus me-2"></i>Nowe zadanie
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-4 g-3">
+    <div class="col-xl-3 col-md-6">
+        <div class="card bg-dark border border-secondary-subtle text-white h-100 shadow-sm">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="card-title mb-1 text-white">
+                            <i class="fas fa-tasks me-2 text-white"></i>Razem zadań
+                        </h6>
+                        <h2 class="mb-0 fw-bold">{{ stats.total }}</h2>
+                    </div>
+                    <i class="fas fa-list fa-3x text-white opacity-50"></i>
+                </div>
+                <small class="text-secondary mt-2 d-block">Wszystkie zadania</small>
+            </div>
+            <div class="card-footer bg-transparent border-top border-secondary-subtle text-secondary small">
+                +{{ stats.new_this_week|default(0) }} tego tygodnia
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6">
+        <div class="card bg-dark border border-secondary-subtle text-white h-100 shadow-sm">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="card-title mb-1 text-white">
+                            <i class="fas fa-check-circle me-2 text-white"></i>Ukończone
+                        </h6>
+                        <h2 class="mb-0 fw-bold">{{ stats.completed }}</h2>
+                    </div>
+                    <i class="fas fa-trophy fa-3x text-white opacity-50"></i>
+                </div>
+                <small class="text-secondary mt-2 d-block">Świetna robota!</small>
+            </div>
+            <div class="card-footer bg-transparent border-top border-secondary-subtle">
+                <span class="badge bg-secondary-subtle text-secondary">
+                    {{ stats.completed }} / {{ stats.total }}
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6">
+        <div class="card bg-dark border border-secondary-subtle text-white h-100 shadow-sm">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="card-title mb-1 text-white">
+                            <i class="fas fa-hourglass-half me-2 text-white"></i>Do zrobienia
+                        </h6>
+                        <h2 class="mb-0 fw-bold">{{ stats.remaining }}</h2>
+                    </div>
+                    <i class="fas fa-spinner fa-3x text-white opacity-50"></i>
+                </div>
+                <small class="text-secondary mt-2 d-block">W toku</small>
+            </div>
+            <div class="card-footer bg-transparent border-top border-secondary-subtle text-secondary small">
+                Ścieżka postępu
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6">
+        <div class="card bg-dark border border-secondary-subtle text-white h-100 shadow-sm">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="card-title mb-1 text-white">
+                            <i class="fas fa-exclamation-circle me-2 text-white"></i>Pilne
+                        </h6>
+                        <h2 class="mb-0 fw-bold">{{ stats.urgent }}</h2>
+                    </div>
+                    <i class="fas fa-fire fa-3x text-white opacity-50"></i>
+                </div>
+                <small class="text-secondary mt-2 d-block">Wymagają uwagi</small>
+            </div>
+            <div class="card-footer bg-transparent border-top border-secondary-subtle text-secondary small">
+                Priorytet wysoki
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card bg-dark border border-secondary-subtle text-white mb-4 shadow-sm">
+    <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h6 class="mb-0 text-white">
+                <i class="fas fa-chart-pie me-2 text-white"></i>Postęp Całkowity
+            </h6>
+            <span class="badge bg-secondary">
+                {% if stats.total > 0 %}
+                    {{ ((stats.completed / stats.total) * 100)|int }}%
+                {% else %}
+                    0%
+                {% endif %}
+            </span>
+        </div>
+
+        <div class="progress" style="height: 12px; border-radius: 6px; background-color: #333;">
+            {% if stats.total > 0 %}
+            <div class="progress-bar bg-white" role="progressbar"
+                 style="width: {{ (stats.completed / stats.total * 100)|int }}%"
+                 aria-valuenow="{{ (stats.completed / stats.total * 100)|int }}"
+                 aria-valuemin="0" aria-valuemax="100">
+            </div>
+            {% else %}
+            <div class="progress-bar bg-white" role="progressbar" style="width: 0%"></div>
+            {% endif %}
+        </div>
+
+        <div class="mt-2 small text-secondary text-center">
+            {% if stats.total > 0 %}
+                {{ stats.completed }} z {{ stats.total }} ukończonych
+            {% else %}
+                Brak zadań do wyświetlenia
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+{% endblock %}

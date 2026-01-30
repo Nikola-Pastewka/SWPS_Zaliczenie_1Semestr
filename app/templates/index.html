@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+{% block title %}TaskFlow{% endblock %}
+
+{% block extra_css %}
+<style>
+    :root {
+        --bg-dark: #0a0a0a;
+        --bg-card: #111111;
+        --border: #222222;
+        --text: #e0e0e0;
+        --text-muted: #888888;
+        --gray-btn: #555555;
+    }
+
+    body { background: var(--bg-dark); color: var(--text); }
+
+    .hero-section {
+        padding: 80px 20px;
+        text-align: center;
+    }
+
+    .display-4 { font-weight: 700; letter-spacing: -1px; }
+    .display-4 i { color: var(--text-muted); margin-right: 15px; }
+
+    .feature-box {
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 2rem;
+        transition: transform 0.3s ease;
+        height: 100%;
+    }
+
+    .feature-box:hover { transform: translateY(-5px); border-color: #444; }
+    .feature-box i { color: #999; margin-bottom: 1rem; }
+
+    .btn-hero {
+        border-radius: 50px;
+        padding: 12px 35px;
+        font-weight: 600;
+        transition: 0.3s;
+    }
+
+    .btn-main { background: var(--gray-btn); color: white; border: none; }
+    .btn-main:hover { background: #777; color: white; transform: translateY(-2px); }
+
+    .btn-outline-custom { border: 1px solid var(--border); color: var(--text); }
+    .btn-outline-custom:hover { background: white; color: black; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="hero-section">
+    <h1 class="display-4 mb-4"><i class="fas fa-tasks"></i>TaskFlow</h1>
+    <p class="lead text-muted mb-5 mx-auto" style="max-width: 600px;">
+        Minimalistyczne narzędzie do zarządzania zadaniami. 
+        Organizuj, priorytetyzuj i osiągaj cele bez zbędnych rozpraszaczy.
+    </p>
+
+    <div class="row g-4 mb-5">
+        <div class="col-md-3">
+            <div class="feature-box">
+                <i class="fas fa-check-circle fa-2x"></i>
+                <h5>Zadania</h5>
+                <p class="small text-muted">Szybkie dodawanie i edycja.</p>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="feature-box">
+                <i class="fas fa-folder fa-2x"></i>
+                <h5>Kategorie</h5>
+                <p class="small text-muted">Logiczna organizacja pracy.</p>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="feature-box">
+                <i class="fas fa-bolt fa-2x"></i>
+                <h5>Pilne</h5>
+                <p class="small text-muted">Śledź kluczowe terminy.</p>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="feature-box">
+                <i class="fas fa-chart-bar fa-2x"></i>
+                <h5>Postęp</h5>
+                <p class="small text-muted">Statystyki Twojej pracy.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="d-flex justify-content-center gap-3">
+        {% if not current_user.is_authenticated %}
+            <a href="{{ url_for('auth.register') }}" class="btn btn-hero btn-main">Zarejestruj się</a>
+            <a href="{{ url_for('auth.login') }}" class="btn btn-hero btn-outline-custom">Zaloguj się</a>
+        {% else %}
+            <a href="{{ url_for('task.dashboard') }}" class="btn btn-hero btn-main">Twój Panel</a>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

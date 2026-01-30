@@ -1,0 +1,200 @@
+{% extends "base.html" %}
+{% block title %}Dodaj nowe zadanie{% endblock %}
+
+{% block extra_css %}
+<style>
+    :root {
+        --bg-dark: #0a0a0a;
+        --bg-card: #111111;
+        --bg-input: #151515;
+        --border: #222222;
+        --text: #e0e0e0;
+        --text-muted: #777777;
+        --gray: #555555;
+        --gray-hover: #777777;
+        --gray-active: #888888;
+        --urgent: #838383; /* Red for Urgent */
+    }
+
+    body {
+        background: var(--bg-dark);
+        color: var(--text);
+        font-family: system-ui, -apple-system, sans-serif;
+    }
+
+    .task-container {
+        max-width: 600px;
+        margin: 60px auto 40px;
+    }
+
+    .card {
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+    }
+
+    .card-body {
+        padding: 2.8rem 2.4rem;
+    }
+
+    .form-title {
+        text-align: center;
+        margin-bottom: 2.2rem;
+        font-size: 1.85rem;
+        font-weight: 600;
+        color: var(--text);
+    }
+
+    .form-title i {
+        margin-right: 0.45rem;
+        color: var(--text-muted);
+    }
+
+    .form-label {
+        color: #bbbbbb;
+        font-size: 0.95rem;
+        font-weight: 500;
+        margin-bottom: 0.45rem;
+    }
+
+    .form-control, .form-select {
+        background: var(--bg-input) !important;
+        border: 1px solid var(--border) !important;
+        color: #ffffff !important;
+        border-radius: 10px;
+        padding: 0.75rem 1.1rem;
+        font-size: 1.05rem;
+        transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .form-control:focus, .form-select:focus {
+        border-color: #444444 !important;
+        box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.05) !important;
+        background: #181818 !important;
+        outline: none;
+    }
+/* Urgent Section Styling - Simplified B&W */
+.urgent-wrapper {
+    background: rgba(255, 255, 255, 0.03);
+    padding: 1.2rem;
+    border-radius: 12px;
+    border: 1px dashed var(--border);
+    transition: all 0.3s ease;
+}
+
+.urgent-wrapper:has(.form-check-input:checked) {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid #666;
+}
+
+.urgent-label {
+    color: #ccc !important;
+    font-weight: 600 !important;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+    .form-check-input:checked {
+        background-color: var(--urgent) !important;
+        border-color: var(--urgent) !important;
+    }
+
+    /* Buttons */
+    .btn-submit {
+        background: var(--gray);
+        border: none;
+        color: white;
+        font-size: 1.1rem;
+        font-weight: 500;
+        padding: 0.8rem 2rem;
+        border-radius: 50px;
+        transition: all 0.22s ease;
+        box-shadow: 0 4px 14px rgba(0,0,0,0.4);
+    }
+
+    .btn-submit:hover {
+        background: var(--gray-hover);
+        transform: translateY(-1px);
+        color: white;
+    }
+
+    .btn-cancel {
+        background: transparent;
+        border: 1px solid var(--border);
+        color: var(--text-muted);
+        font-size: 1.1rem;
+        padding: 0.8rem 2rem;
+        border-radius: 50px;
+        transition: all 0.22s ease;
+    }
+
+    @media (max-width: 576px) {
+        .card-body { padding: 2rem 1.6rem; }
+        .task-container { margin: 40px 15px 30px; }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="task-container">
+    <div class="card">
+        <div class="card-body">
+            <h2 class="form-title">
+                <i class="fas fa-plus-circle"></i> Dodaj zadanie
+            </h2>
+            
+            <form method="POST">
+                {{ form.hidden_tag() }}
+
+                <div class="mb-4">
+                    {{ form.title.label(class="form-label") }}
+                    {% if form.title.errors %}
+                        {{ form.title(class="form-control is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.title.errors %}{{ error }}{% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.title(class="form-control", placeholder="Co jest do zrobienia?") }}
+                    {% endif %}
+                </div>
+
+                <div class="mb-4">
+                    {{ form.description.label(class="form-label") }}
+                    {{ form.description(class="form-control", rows="3", placeholder="Opcjonalne szczegóły...") }}
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-4">
+                        {{ form.category.label(class="form-label") }}
+                        {{ form.category(class="form-select") }}
+                    </div>
+                    <div class="col-md-6 mb-4">
+                        {{ form.due_date.label(class="form-label") }}
+                        {{ form.due_date(class="form-control", type="date") }}
+                        {% if form.due_date.errors %}
+                            <div class="text-danger small mt-1">
+                                {% for error in form.due_date.errors %}{{ error }}{% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <div class="urgent-wrapper">
+                        <div class="form-check">
+                            {{ form.is_urgent(class="form-check-input") }}
+                            {{ form.is_urgent.label(class="form-check-label urgent-label") }}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-grid gap-3 d-md-flex justify-content-md-end mt-5">
+                    <a href="{{ url_for('task.dashboard') }}" class="btn btn-cancel">Anuluj</a>
+                    {{ form.submit(class="btn btn-submit") }}
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

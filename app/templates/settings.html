@@ -1,0 +1,282 @@
+<!-- settings.html -->
+{% extends "base.html" %}
+{% block title %}Ustawienia{% endblock %}
+
+{% block extra_css %}
+<style>
+    :root {
+        --bg-dark:     #0a0a0a;
+        --bg-card:     #111111;
+        --bg-input:    #151515;
+        --border:      #222222;
+        --text:        #e0e0e0;
+        --text-muted:  #777777;
+        --gray:        #555555;
+        --gray-hover:  #777777;
+        --gray-active: #888888;
+    }
+
+    body {
+        background: var(--bg-dark);
+        color: var(--text);
+        font-family: system-ui, -apple-system, sans-serif;
+    }
+
+    .settings-container {
+        max-width: 540px;
+        margin: 50px auto 60px;
+        padding: 0 15px;
+    }
+
+    .card {
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+        margin-bottom: 2rem;
+    }
+
+    .card-body {
+        padding: 2.4rem 2.2rem;
+    }
+
+    .section-title {
+        font-size: 1.45rem;
+        font-weight: 600;
+        margin: 0 0 1.6rem;
+        color: var(--text);
+    }
+
+    .section-title i {
+        color: var(--gray-hover);
+        margin-right: 0.5rem;
+        font-size: 1.55rem;
+        vertical-align: -0.14em;
+    }
+
+    .form-label {
+        color: #bbbbbb;
+        font-size: 0.95rem;
+        font-weight: 500;
+        margin-bottom: 0.5rem;
+    }
+
+    .form-control {
+        background: var(--bg-input);
+        border: 1px solid var(--border);
+        color: #ffffff !important;
+        border-radius: 10px;
+        padding: 0.75rem 1.1rem;
+        height: 52px;
+        font-size: 1.03rem;
+        transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .form-control:focus {
+        border-color: #444444;
+        box-shadow: 0 0 0 3px rgba(0,0,0,0.25);
+        background: #181818;
+        outline: none;
+    }
+
+    .form-control::placeholder {
+        color: #666666 !important;
+        opacity: 1;
+    }
+
+    .form-text {
+        color: var(--text-muted) !important;
+        font-size: 0.84rem;
+        margin-top: 0.4rem;
+    }
+
+    .invalid-feedback {
+        color: #ff9999;
+        font-size: 0.86rem;
+    }
+
+    .btn-save {
+        background: var(--gray);
+        border: none;
+        color: white;
+        font-size: 1.05rem;
+        font-weight: 500;
+        padding: 0.85rem 1.8rem;
+        border-radius: 50px;
+        height: 52px;
+        transition: all 0.22s ease;
+        box-shadow: 0 4px 14px rgba(0,0,0,0.4);
+    }
+
+    .btn-save:hover {
+        background: var(--gray-hover);
+        transform: translateY(-1px);
+        box-shadow: 0 6px 18px rgba(0,0,0,0.5);
+    }
+
+    .btn-save:active {
+        background: var(--gray-active);
+        transform: translateY(0);
+    }
+
+    hr {
+        border-color: #222;
+        margin: 1.8rem 0;
+        opacity: 0.55;
+    }
+
+    .danger-zone .card {
+        border-color: #000000;
+    }
+
+    .danger-zone .card-header {
+        color: #ff9999;
+        border-bottom: 1px solid #440000;
+        font-weight: 500;
+    }
+
+    .btn-danger-outline {
+        background: transparent;
+        border: 1px solid #992222;
+        color: #ff8888;
+        font-weight: 500;
+        transition: all 0.2s ease;
+    }
+
+    .btn-danger-outline:hover {
+        background: #ca1313a0;
+        border-color: #ff0000;
+        color: #ffffff;
+        
+    }
+
+    @media (max-width: 576px) {
+        .card-body {
+            padding: 1.9rem 1.5rem;
+        }
+        .settings-container {
+            margin: 30px 12px 40px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="settings-container">
+
+<h1 class="section-title mb-5 text-center">
+    <i class="fas fa-cog "></i> Ustawienia
+</h1>
+
+    <!-- Informacje o koncie -->
+    <div class="card">
+        <div class="card-body">
+            <h2 class="section-title">
+                <i class="fas fa-user-circle"></i> Konto
+            </h2>
+
+            <form method="POST" novalidate>
+                <!-- Nazwa użytkownika -->
+                <div class="mb-4">
+                    <label for="username" class="form-label">
+                        Nazwa użytkownika
+                    </label>
+                    <input type="text" class="form-control" id="username" name="username"
+                           value="{{ current_user.username }}" placeholder="Twoja nazwa...">
+                    <small class="form-text">
+                        Pozostaw puste, aby nie zmieniać
+                    </small>
+                </div>
+
+                <!-- Email -->
+                <div class="mb-4">
+                    <label for="email" class="form-label">
+                        Adres e-mail
+                    </label>
+                    <input type="email" class="form-control" id="email" name="email"
+                           value="{{ current_user.email }}" placeholder="twoj@email.com">
+                    <small class="form-text">
+                        Pozostaw puste, aby nie zmieniać
+                    </small>
+                </div>
+
+                <hr>
+
+                <!-- Zmiana hasła -->
+                <h3 class="section-title mt-4 mb-4" style="font-size:1.3rem;">
+                    <i class="fas fa-lock"></i> Nowe hasło
+                </h3>
+
+                <div class="mb-4">
+                    <label for="password" class="form-label">Nowe hasło</label>
+                    <input type="password" class="form-control" id="password" name="password"
+                           placeholder="Pozostaw puste, aby nie zmieniać">
+                    <small class="form-text">
+                        Minimum 6 znaków
+                    </small>
+                </div>
+
+                <div class="mb-5">
+                    <label for="confirm_password" class="form-label">Powtórz hasło</label>
+                    <input type="password" class="form-control" id="confirm_password"
+                           name="confirm_password" placeholder="Powtórz nowe hasło">
+                </div>
+
+                <div class="d-grid">
+                    <button type="submit" class="btn btn-save">
+                        <i class="fas fa-save me-2"></i> Zapisz zmiany
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Niebezpieczna strefa -->
+    <div class="card danger-zone">
+        <div class="card-header">
+            <i class="fas fa-exclamation-triangle me-2"></i> Niebezpieczna strefa
+        </div>
+        <div class="card-body">
+            <h6 class="text-danger mb-3" style="font-weight: 600;">
+                <i class="fas fa-trash-alt me-2"></i> Usuń konto
+            </h6>
+            <p class="text-muted small mb-4">
+                Ta operacja jest nieodwracalna. Wszystkie dane, listy i ustawienia zostaną trwale usunięte.
+            </p>
+            <button type="button" class="btn btn-danger-outline btn-sm"
+                    data-bs-toggle="modal" data-bs-target="#deleteAccountModal">
+                <i class="fas fa-trash-alt me-1"></i> Usuń konto
+            </button>
+        </div>
+    </div>
+
+</div>
+
+<!-- Modal usunięcia konta -->
+<div class="modal fade" id="deleteAccountModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="background: #111; border: 1px solid #440000; color: #e0e0e0;">
+            <div class="modal-header" style="border-bottom: 1px solid #440000;">
+                <h5 class="modal-title text-danger">
+                    <i class="fas fa-exclamation-circle me-2"></i> Potwierdź usunięcie
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                Czy na pewno chcesz <strong>trwale usunąć</strong> konto?<br>
+                Tej operacji nie można cofnąć.
+            </div>
+            <div class="modal-footer" style="border-top: 1px solid #440000;">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Anuluj</button>
+                <form method="POST" action="{{ url_for('task.delete_account') }}" style="display:inline;">
+                    <button type="submit" class="btn btn-danger">
+                        <i class="fas fa-trash-alt me-1"></i> Usuń konto
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

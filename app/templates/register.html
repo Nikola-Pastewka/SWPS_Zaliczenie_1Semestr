@@ -1,0 +1,250 @@
+<!-- register.html -->
+{% extends "base.html" %}
+{% block title %}Rejestracja{% endblock %}
+
+{% block extra_css %}
+<style>
+    :root {
+        --bg-dark:       #0a0a0a;
+        --bg-card:       #111111;
+        --bg-input:      #151515;
+        --border:        #222222;
+        --text:          #e0e0e0;
+        --text-muted:    #777777;
+        --gray:          #555555;
+        --gray-hover:    #777777;
+        --gray-active:   #888888;
+    }
+
+    body {
+        background: var(--bg-dark);
+        color: var(--text);
+        font-family: system-ui, -apple-system, sans-serif;
+    }
+
+    .register-container {
+        max-width: 420px;
+        margin: 60px auto 40px;
+    }
+
+    .card {
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+    }
+
+    .card-body {
+        padding: 2.8rem 2.4rem;
+    }
+
+    .form-title {
+        text-align: center;
+        margin-bottom: 2.2rem;
+        font-size: 1.85rem;
+        font-weight: 600;
+        color: var(--text);
+    }
+
+    .form-title i {
+        color: var(--gray-hover);
+        margin-right: 0.5rem;
+        font-size: 1.9rem;
+        vertical-align: -0.15em;
+    }
+
+    .form-label {
+        color: #bbbbbb;
+        font-size: 0.95rem;
+        font-weight: 500;
+        margin-bottom: 0.45rem;
+    }
+
+    .form-control {
+        background: var(--bg-input);
+        border: 1px solid var(--border);
+        color: white;
+        border-radius: 10px;
+        padding: 0.75rem 1.1rem;
+        height: 52px;
+        font-size: 1.05rem;
+        transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .form-control:focus {
+        border-color: #666666;
+        box-shadow: 0 0 0 3px rgba(80,80,80,0.35);
+        background: #181818;
+        outline: none;
+    }
+
+    .form-control::placeholder {
+        color: #555;
+    }
+
+    .form-text {
+        color: var(--text-muted) !important;
+        font-size: 0.82rem;
+        margin-top: 0.35rem;
+    }
+
+    .invalid-feedback {
+        color: #ff9999;
+        font-size: 0.85rem;
+    }
+
+    .btn-register {
+        background: var(--gray);
+        border: none;
+        color: white;
+        font-size: 1.1rem;
+        font-weight: 500;
+        padding: 0.9rem 1.5rem;
+        border-radius: 50px;
+        height: 54px;
+        width: 100%;
+        transition: all 0.22s ease;
+        box-shadow: 0 4px 14px rgba(0,0,0,0.4);
+    }
+
+    .btn-register:hover {
+        background: var(--gray-hover);
+        transform: translateY(-1px);
+        box-shadow: 0 6px 18px rgba(0,0,0,0.5);
+    }
+
+    .btn-register:active {
+        background: var(--gray-active);
+        transform: translateY(0);
+    }
+
+    hr {
+        border-color: #222;
+        margin: 1.8rem 0;
+        opacity: 0.6;
+    }
+
+    .login-link {
+        text-align: center;
+        color: #888;
+        font-size: 0.95rem;
+    }
+
+    .login-link a {
+        color: #bbbbbb;
+        text-decoration: none;
+        font-weight: 500;
+    }
+
+    .login-link a:hover {
+        color: #ddd;
+        text-decoration: underline;
+    }
+
+    @media (max-width: 576px) {
+        .card-body {
+            padding: 2rem 1.6rem;
+        }
+        .register-container {
+            margin: 40px 15px 30px;
+        }
+    }
+    .form-control {
+    color: #ffffff !important;          /* czysty biały – zawsze widoczny */
+    background: #1a1a1a !important;     /* trochę jaśniejsze tło (opcjonalnie) */
+}
+
+.form-control::placeholder {
+    color: #666666 !important;          /* szare placeholder'y – nie za jasne */
+}
+
+.form-control:focus {
+    color: #ffffff !important;
+    background: #202020 !important;     /* lekkie rozjaśnienie przy fokusie */
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="register-container">
+    <div class="card">
+        <div class="card-body">
+
+            <h2 class="form-title">
+                <i class="fas fa-user-plus"></i> Rejestracja
+            </h2>
+
+            <form method="POST" novalidate>
+                {{ form.hidden_tag() }}
+
+                <!-- Nazwa użytkownika -->
+                <div class="mb-4">
+                    {{ form.username.label(class="form-label") }}
+                    {% if form.username.errors %}
+                        {{ form.username(class="form-control is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.username.errors %}{{ error }}<br>{% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.username(class="form-control") }}
+                    {% endif %}
+                    <small class="form-text">Od 3 do 80 znaków</small>
+                </div>
+
+                <!-- Email -->
+                <div class="mb-4">
+                    {{ form.email.label(class="form-label") }}
+                    {% if form.email.errors %}
+                        {{ form.email(class="form-control is-invalid", type="email") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.email.errors %}{{ error }}<br>{% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.email(class="form-control", type="email") }}
+                    {% endif %}
+                </div>
+
+                <!-- Hasło -->
+                <div class="mb-4">
+                    {{ form.password.label(class="form-label") }}
+                    {% if form.password.errors %}
+                        {{ form.password(class="form-control is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.password.errors %}{{ error }}<br>{% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.password(class="form-control") }}
+                    {% endif %}
+                    <small class="form-text">Minimum 6 znaków</small>
+                </div>
+
+                <!-- Powtórz hasło -->
+                <div class="mb-4">
+                    {{ form.password_confirm.label(class="form-label") }}
+                    {% if form.password_confirm.errors %}
+                        {{ form.password_confirm(class="form-control is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.password_confirm.errors %}{{ error }}<br>{% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.password_confirm(class="form-control") }}
+                    {% endif %}
+                </div>
+
+                <!-- Przycisk -->
+                <div class="d-grid mt-5">
+                    {{ form.submit(class="btn btn-register") }}
+                </div>
+            </form>
+
+            <hr>
+
+            <p class="login-link">
+                Masz już konto? <a href="{{ url_for('auth.login') }}">Zaloguj się tutaj</a>
+            </p>
+
+        </div>
+    </div>
+</div>
+{% endblock %}
